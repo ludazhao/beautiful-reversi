@@ -1,6 +1,5 @@
 function Grid(size, gameContainer) {
 	this.size = size;
-	this.totalTiles = size * size;
 	this.gameContainer = gameContainer;
 	this.isWhitesTurn = true;
 	this.numPlayed = 0;
@@ -64,7 +63,7 @@ Grid.prototype.makeMove = function(x, y){
 		}
 
 		//TODO: Add animations. Detect winning conditions
-		if (this.numPlayed == 8) {
+		if (this.numPlayed == this.size * this.size) {
 			document.getElementById("whiteIndicator").style.visibility = 'visible';
 			document.getElementById("blackIndicator").style.visibility = 'visible';
 			if (this.numColor("white") >= this.numColor("black")) {

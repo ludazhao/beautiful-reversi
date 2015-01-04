@@ -1,8 +1,8 @@
 TODO:
 
-- Detect when no pieces can be played(Advanced)
+- Detect when no pieces can be played as terminating condition
+- Create Display of Counts
+- Update Game Pieces graphics
+- Create Multiplayer(Advanced)
 
-- Create Display of Current Player, Counts
-- Link Display with Game
-- Create Display of Winning
 
