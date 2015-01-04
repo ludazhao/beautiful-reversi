@@ -1,0 +1,46 @@
+body {
+     margin: 0;
+     padding: 0;
+     background-color: #e6e6e6;
+}
+
+#gameWindow{
+	text-align:center;
+}
+
+canvas {
+	margin:auto;
+}
+
+#whiteIndicator{
+	width:64px;
+	height:64px;
+	position:relative;
+	display:inline-block;
+	margin: 0px -74px 0px 10px;
+	background-image: url("../images/white_tile.jpg");
+}
+
+#blackIndicator{
+
+	width:64px;
+	height:64px;
+	position:relative;
+	display:inline-block;
+	margin: 0px 10px 0px -62px;
+	right: -86px;
+	background-image: url("../images/black_tile.jpg");
+}
+
+div.crown{
+	width:64px;
+	height:64px;
+	position:relative;
+	display: inline-block;
+	right: 5px;
+	top: -60px;
+	margin: 0px 12px;
+	background-image: url("../images/crown.png");
+	background-size: contain;
+	visibility: hidden;
+}

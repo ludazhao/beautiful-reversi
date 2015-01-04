@@ -2,19 +2,22 @@
 <html>
      <head>
           <title>Beautiful Reversi</title>
-          <style>
-               body {
-                    margin: 0;
-                    padding: 0;
-               }
-          </style>
-          
+          <link rel="stylesheet" type="text/css" href="css/main.css">
      </head>
      <body>
+          <div id="gameWindow">
+               <div id="whiteIndicator"></div>
+               <div id="crown1" class="crown"></div>
+               <!-- position of canvas -->
+               <div id="blackIndicator"></div>
+               <div id="crown2" class="crown"></div>
+          </div>
 
      </body>
           <script src="js/pixi.dev.js"></script>
           <script src="js/tweenjs.js"></script>
+          <script src="js/tile.js"></script>
+          <script src="js/grid.js"></script>
           <script src="js/game.js"></script>
           <script>
                window.requestAnimationFrame(function () {

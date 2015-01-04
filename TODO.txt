@@ -1,0 +1,8 @@
+TODO:
+
+- Detect when no pieces can be played(Advanced)
+
+- Create Display of Current Player, Counts
+- Link Display with Game
+- Create Display of Winning
+
