@@ -61,7 +61,8 @@ Grid.prototype.makeMove = function(x, y){
 
 		//if opponents cannot make a move, the current player keeps his turn
 		if (this.opponentsMovesPossible(this.currPlayer)){
-			this.currPlayer = !this.currPlayer;
+			console.log("!");
+			this.currPlayer = this.currPlayer === "white" ? "black" : "white";
 			this.setTurnColor(this.currPlayer);
 		}
 
@@ -80,12 +81,12 @@ Grid.prototype.makeMove = function(x, y){
 	}
 }
 
+//returns true if there is a possible move for the next player, false otherwise
 Grid.prototype.opponentsMovesPossible = function(currPlayer){
 	var nextPlayer = currPlayer === "white" ? "black" : "white";
-
 	for (var x = 0; x < this.size; x++) {
 		for (var y = 0; y < this.size; y++) {
-			if (!color && findAlteredTiles(this.grid[x][y], nextPlayer) > 1) {
+			if (!this.grid[x][y].color && this.findAlteredTiles(this.grid[x][y], nextPlayer).length > 1) {
 				return true;
 			}
 		}
