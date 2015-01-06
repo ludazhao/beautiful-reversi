@@ -1,7 +1,7 @@
 function Grid(size, gameContainer) {
 	this.size = size;
 	this.gameContainer = gameContainer;
-	this.isWhitesTurn = true;
+	this.currPlayer = "white";
 	this.numPlayed = 0;
 	this.grid = [];
 }
@@ -16,10 +16,10 @@ Grid.prototype.initBoard = function() {
 			var color = null;
 
 			//create center pieces
-			if ((x == 3 && y == 3) || (x == 4 && y == 4)) {
+			if ((x === 3 && y === 3) || (x === 4 && y === 4)) {
 				color = "white";
 			}
-			if ((x == 4 && y == 3) || (x == 3 && y == 4)) {
+			if ((x === 4 && y === 3) || (x === 3 && y === 4)) {
 				color = "black";
 			}
 			this.numPlayed = 4;
@@ -27,43 +27,47 @@ Grid.prototype.initBoard = function() {
 			var tile = new Tile(new PIXI.Sprite.fromImage("images/white_tile.jpg"), x, y, color);
 			// add the tile
 			this.gameContainer.addChild(tile.sprite);
+
+			// attach a mouse listener to each tile and pass the grid object into makeMove
 			tile.sprite.mousedown = tile.sprite.touchstart = this.makeMove.bind(this, x, y);
 
 		  	row.push(tile);
 		}
 	}
 
-	this.setTurnColor("white");
+	this.setTurnColor(this.currPlayer);
 }
 
-
+//function executing a possible move. 
 Grid.prototype.makeMove = function(x, y){
 	var tile = this.grid[x][y];
 
 	//if the tile is already used
-	if (tile.color != null) {
+	if (tile.color !== null) {
 		tile.noFlipAnimate();
 		return;
 	}
 
-	var currPlayerColor = this.isWhitesTurn ? "white": "black";
-
 	//find a Array of tiles that needs to be flipped
-	var allAlteredTiles = this.findAlteredTiles(tile, currPlayerColor);
+	var allAlteredTiles = this.findAlteredTiles(tile, this.currPlayer);
 	if (allAlteredTiles.length <= 1) {
 		tile.noFlipAnimate();
 	} else {
-		this.isWhitesTurn = !this.isWhitesTurn;
-		this.setTurnColor(this.isWhitesTurn ? "white": "black");
 		this.numPlayed += 1;
-
 		//flip all pieces
 		for (var i = 0; i < allAlteredTiles.length; i++) {
-			allAlteredTiles[i].flip(currPlayerColor);
+			allAlteredTiles[i].flip(this.currPlayer);
 		}
 
-		//TODO: Add animations. Detect winning conditions
-		if (this.numPlayed == this.size * this.size) {
+		//if opponents cannot make a move, the current player keeps his turn
+		if (this.opponentsMovesPossible(this.currPlayer)){
+			this.currPlayer = !this.currPlayer;
+			this.setTurnColor(this.currPlayer);
+		}
+
+		//check for game-end conditions
+		if (this.numPlayed === this.size * this.size
+			|| (!this.opponentsMovesPossible("white") && !this.opponentsMovesPossible("black"))) {
 			document.getElementById("whiteIndicator").style.visibility = 'visible';
 			document.getElementById("blackIndicator").style.visibility = 'visible';
 			if (this.numColor("white") >= this.numColor("black")) {
@@ -76,7 +80,20 @@ Grid.prototype.makeMove = function(x, y){
 	}
 }
 
+Grid.prototype.opponentsMovesPossible = function(currPlayer){
+	var nextPlayer = currPlayer === "white" ? "black" : "white";
 
+	for (var x = 0; x < this.size; x++) {
+		for (var y = 0; y < this.size; y++) {
+			if (!color && findAlteredTiles(this.grid[x][y], nextPlayer) > 1) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+//for a particular move, find all tiles that would be affected
 Grid.prototype.findAlteredTiles = function(tile, currPlayerColor) {
 	var tiles = [];
 	tiles.push(tile); //add the tile itself
@@ -84,7 +101,7 @@ Grid.prototype.findAlteredTiles = function(tile, currPlayerColor) {
 	//For all 8 directions, find the tiles that needs to be flipped
 	for (var i = -1; i <= 1; i++) {
 		for (var j = -1; j <= 1; j++) {
-			if (i != 0 || j != 0) {
+			if (i !== 0 || j !== 0) {
 				//add the tiles that need to be flipped for a particular direction
 				tiles.push.apply(tiles, this.findTilesByDir(tile, currPlayerColor, i, j)); //i and j represent direction
 			}
@@ -115,6 +132,7 @@ Grid.prototype.findTilesByDir = function(tile, currPlayerColor, dirX, dirY) {
 	return [];
 }
 
+//helper function to see if a tile is in bounds
 Grid.prototype.inBounds = function(x, y) {
 	return (x >= 0 && y >= 0 && x < this.size && y < this.size);
 }
@@ -124,20 +142,21 @@ Grid.prototype.numColor = function(color){
 	var res = 0;
 	for (var i = 0; i < this.size; i++) {
 		for (var j = 0; j < this.size; j++) {
-			if (this.grid[i][j].color == color) res += 1;
+			if (this.grid[i][j].color === color) res += 1;
 		}
 	}
 	return res;
 }
 
+//Set the turn indicators 
 Grid.prototype.setTurnColor = function(color) {
 	var wt = document.getElementById("whiteIndicator");
 	var bt = document.getElementById("blackIndicator");
 
-	if (color == "white") {
+	if (color === "white") {
 		wt.style.visibility = 'visible';
 		bt.style.visibility = 'hidden';
-	} else if (color == "black") {
+	} else if (color === "black") {
 		bt.style.visibility = 'visible';
 		wt.style.visibility = 'hidden';
 	}
