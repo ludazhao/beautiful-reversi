@@ -61,7 +61,6 @@ Grid.prototype.makeMove = function(x, y){
 
 		//if opponents cannot make a move, the current player keeps his turn
 		if (this.opponentsMovesPossible(this.currPlayer)){
-			console.log("!");
 			this.currPlayer = this.currPlayer === "white" ? "black" : "white";
 			this.setTurnColor(this.currPlayer);
 		}
