@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html>
+     <head>
+          <title>Beautiful Reversi</title>
+          <link rel="stylesheet" type="text/css" href="css/main.css">
+     </head>
+     <body>
+
+
+          <div id="gameArea">
+              <!-- This is where the templates defined below will be used -->
+          </div>
+
+          <!-- Main Title Screen that appears when the page loads for the first time -->
+          <script id="intro-screen-template" type="text/template">
+
+              <div id="titleWrapper" class="titleWrapper">
+
+                  <div class="title">
+                      Beautiful Reversi
+                  </div>
+
+                  <div class="buttons">
+
+                      <button id="btnStartSingleGame" class="btn left">SINGLE COMPUTER GAME</button>
+                      <button id="btnCreateGame" class="btn middle">CREATE MULTIPLAYER GAME</button>
+                      <button id="btnJoinGame" class="btn right">JOIN MULTIPLAYER GAME</button>
+
+                      <div style="clear:both"></div>
+                  </div>
+
+              </div>
+
+          </script>
+
+          <!-- This screen appears when a user clicks "CREATE" on the Title Screen -->
+          <script id="create-game-template" type="text/template">
+              <div class="createGameWrapper">
+
+                  <div class="info">Game Created! Please send this url to them: </div>
+                  <div id="gameURL" class="info infobox infoBig">Error!</div>
+
+                  <div class="info">Then click <strong>JOIN</strong> and <br/> and enter the following Game ID:</div>
+                  <div id="spanNewGameCode" class="info infobox gameId">Error!</div>
+
+                  <div id="playersWaiting"></div>
+              </div>
+          </script>
+
+          <!-- This scrreen appears when a player clicks "JOIN" on the Title Screen -->
+          <script id="join-game-template" type="text/template">
+              <div class="joinGameWrapper">
+                  <div class="info">
+                      <label for="inputPlayerName">Your Name:</label>
+                      <input id="inputPlayerName" type="text" />
+                  </div>
+
+                  <div class="info">
+                      <label for="inputGameId">Game ID:</label>
+                      <input id="inputGameId" type="text"/>
+                  </div>
+
+                  <div class="buttons">
+                      <button id="btnStart" class="btn">Start</button>
+                      <div id="playerWaitingMessage"></div>
+                  </div>
+              </div>
+          </script>
+
+          <!-- This screen is the game screen-->
+          <script id="main-game-template" type="text/template">
+          <div id="gameWindow">
+               <div id="whiteIndicator"><span class="count" id="whiteCount">2</span></div>
+               <!-- position of canvas -->
+               <div id="blackIndicator"><span class="count" id="blackCount">2</span></div>
+          </div>
+          <div id="gameMessage">White starts. Good luck!</div>
+          </script>
+
+
+     </body>
+          <script src="js/jquery-2.1.4.min.js"></script>
+          <script src="js/pixi.dev.js"></script>
+          <script src="js/tweenjs.js"></script>
+          <script src="js/tile.js"></script>
+          <script src="js/grid.js"></script>
+          <script src="/socket.io/socket.io.js"></script>
+          <script src="js/client_io.js"></script>
+          <script src="js/game_manager.js"></script>          
+          <script>
+               window.requestAnimationFrame(function () {
+                 new GameManager(Client_IO);
+               });
+          </script>
+
+</html>

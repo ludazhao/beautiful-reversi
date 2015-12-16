@@ -1,9 +1,20 @@
-function Grid(size, gameContainer) {
+function Grid(size, gameManager, gameContainer, playerNum) {
 	this.size = size;
+	this.gm = gameManager;
+	this.isMulti = playerNum != 0;
+	this.playerNum = playerNum;
 	this.gameContainer = gameContainer;
-	this.currPlayer = "white";
+	this.isYourTurn = true;
+	if (this.playerNum == 0 || this.playerNum == 1) {
+		this.currPlayer = "white";
+	} else {
+		this.isYourTurn = false;
+		this.currPlayer = "black";
+	}
 	this.numPlayed = 0;
 	this.grid = [];
+	console.log(this.isYourTurn);
+
 }
 
 Grid.prototype.initBoard = function() {
@@ -28,18 +39,22 @@ Grid.prototype.initBoard = function() {
 			// add the tile
 			this.gameContainer.addChild(tile.sprite);
 
-			// attach a mouse listener to each tile and pass the grid object into makeMove
-			tile.sprite.mousedown = tile.sprite.touchstart = this.makeMove.bind(this, x, y);
+			// attach a mouse listener to each tile and pass the grid object into makeMove(passing 'true' for own move)
+			tile.sprite.mousedown = tile.sprite.touchstart = this.makeMove.bind(this, x, y, true);
 
 		  	row.push(tile);
 		}
 	}
-
+	console.log(this.currPlayer);
 	this.setTurnColor(this.currPlayer);
 }
 
 //function executing a possible move. 
-Grid.prototype.makeMove = function(x, y){
+Grid.prototype.makeMove = function(x, y, isOwnMove){
+	if (!this.isYourTurn && isOwnMove) return; //can't make a move when waiting for the other player
+	if (this.numPlayed == 4) {
+		$("#gameMessage").text("");
+	}
 	var tile = this.grid[x][y];
 
 	//if the tile is already used
@@ -53,6 +68,9 @@ Grid.prototype.makeMove = function(x, y){
 	if (allAlteredTiles.length <= 1) {
 		tile.noFlipAnimate();
 	} else {
+		var moveData = {}
+		moveData['move'] = [x, y];
+
 		this.numPlayed += 1;
 		//flip all pieces
 		for (var i = 0; i < allAlteredTiles.length; i++) {
@@ -63,18 +81,40 @@ Grid.prototype.makeMove = function(x, y){
 		if (this.opponentsMovesPossible(this.currPlayer)){
 			this.currPlayer = this.currPlayer === "white" ? "black" : "white";
 			this.setTurnColor(this.currPlayer);
+			moveData['keepOwnTurn'] = true;
 		}
-
+		this.updateCountsGraphics();
 		//check for game-end conditions
 		if (this.numPlayed === this.size * this.size
 			|| (!this.opponentsMovesPossible("white") && !this.opponentsMovesPossible("black"))) {
-			document.getElementById("whiteIndicator").style.visibility = 'visible';
-			document.getElementById("blackIndicator").style.visibility = 'visible';
-			if (this.numColor("white") >= this.numColor("black")) {
-				document.getElementById("crown1").style.visibility = 'visible';
+
+				document.getElementById("blackIndicator").classList.remove('active');
+				document.getElementById("whiteIndicator").classList.remove('active');
+			if (this.numColor("white") > this.numColor("black")) {
+				document.getElementById("whiteIndicator").classList.add('activeWon');
+				this.gameMssg.innerHTML = "White Wins!";
 			}
-			if (this.numColor("black") >= this.numColor("white")){
-				document.getElementById("crown2").style.visibility = 'visible';
+			if (this.numColor("black") > this.numColor("white")){
+				document.getElementById("blackIndicator").classList.add('activeWon');
+				this.gameMssg.innerHTML = "Black Wins!";
+			}
+			if (this.numColor("black") === this.numColor("white")) {
+				document.getElementById("whiteIndicator").classList.add('activeWon');
+				document.getElementById("blackIndicator").classList.add('activeWon');
+				this.gameMssg.innerHTML = "Tie!!";
+
+			}
+			moveData['gameOver'] = true;
+		}
+		console.log(this.isMulti);
+		console.log(isOwnMove);
+		if (this.isMulti) {
+			if (isOwnMove) {
+				console.log("grid: sending data");
+				this.gm.sendMove(moveData);
+				this.isYourTurn = false;
+			} else {
+				this.isYourTurn = true;
 			}
 		}
 	}
@@ -148,16 +188,23 @@ Grid.prototype.numColor = function(color){
 	return res;
 }
 
+Grid.prototype.updateCountsGraphics = function() {
+	document.getElementById("blackCount").innerHTML	= this.numColor("black");	
+	document.getElementById("whiteCount").innerHTML = this.numColor("white");
+}
+
 //Set the turn indicators 
 Grid.prototype.setTurnColor = function(color) {
-	var wt = document.getElementById("whiteIndicator");
-	var bt = document.getElementById("blackIndicator");
-
 	if (color === "white") {
-		wt.style.visibility = 'visible';
-		bt.style.visibility = 'hidden';
+		$("#whiteIndicator").addClass('active');
+		$("#blackIndicator").removeClass('active');
 	} else if (color === "black") {
-		bt.style.visibility = 'visible';
-		wt.style.visibility = 'hidden';
+		$("#blackIndicator").addClass('active');
+		$("#whiteIndicator").removeClass('active');
 	}
+}
+
+Grid.prototype.animate = function() {
+	//console.log("Animating Grid");
+	//console.log(this);
 }
