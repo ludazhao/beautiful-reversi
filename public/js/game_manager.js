@@ -1,6 +1,7 @@
 
 function GameManager(Client_IO) {
      this.IO = new Client_IO(this); //create new socket IO instance
+
      //Cache the different templates
      this.$gameArea = $('#gameArea');
      this.$templateIntroScreen = $('#intro-screen-template').html();
@@ -18,17 +19,15 @@ function GameManager(Client_IO) {
      this.$doc.on('click', '#btnCreateGame', this.onCreateGameClick.bind(this));
      this.$doc.on('click', '#btnJoinGame', this.onJoinGameClick.bind(this));
      this.$doc.on('click', '#btnStart', this.onPlayerStartClick.bind(this));
-     // this.$doc.on('click', '.btnAnswer',App.onPlayerAnswerClick);
-     // this.startGame();
+
 }
 
-
-/* Player 1 Actions */
-
+/*****************************/
+/* Player 1 Pre-Game Actions */
+/*****************************/
 GameManager.prototype.onCreateGameClick = function() {
      this.IO.onCreateGameClick();
 }
-
 
 GameManager.prototype.displayNewGameScreen = function() {
      // Fill the game screen with the appropriate HTML
@@ -39,10 +38,9 @@ GameManager.prototype.displayNewGameScreen = function() {
      $('#spanNewGameCode').text(this.IO.gameId);
 }
 
-/* End Player 1 Actions */
-
-/* Player 2 Actions */
-
+/*****************************/
+/* Player 2 Pre-Game Actions */
+/*****************************/
 GameManager.prototype.onJoinGameClick = function() {
      this.$gameArea.html(this.$templateJoinGame);
 }
@@ -60,7 +58,10 @@ GameManager.prototype.onPlayerStartClick = function() {
      this.playerName = data.playerName;
 }
 
-/* End Player 2 Actions */
+
+/*******************/
+/* In-Game Actions */
+/*******************/
 
 GameManager.prototype.startGame = function(data) {
      this.$gameArea.html(this.$mainGame);
@@ -86,14 +87,13 @@ GameManager.prototype.startGame = function(data) {
 };
 
 GameManager.prototype.sendMove = function(data) {
-     console.log("gm: send move.");
      data.playerNum = this.playerNum;
      data.gameId = this.playerData.gameId;
      this.IO.sendMove(data);
 }
 
-GameManager.prototype.sendMove = function(data) {
-     this.grid.makeMove(data['move'][0], data['move'][1], false);
+GameManager.prototype.receiveMove = function(data) {
+     this.grid.makeMove(data['move'][0], data['move'][1], false); //make move received from opponent
 }
 
 GameManager.prototype.animate = function (){

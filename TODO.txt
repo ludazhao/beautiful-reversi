@@ -1,8 +1,5 @@
-TODO:
 
-- Create Display of Counts
-- Update Game Pieces graphics
-- Create Multiplayer(Advanced)
-- Create Save/Load mechanism(Advanced)
-- Create User Account + High Scores(Advanced)
+
+- Create Better End Screen
+- Create More options in game
 

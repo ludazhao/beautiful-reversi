@@ -7,15 +7,11 @@ exports.initGame = function(sio, socket){
     gameSocket.emit('connected', { message: "You are connected!" });
 
     gameSocket.on('hostCreateNewGame', hostCreateNewGame);
-    // gameSocket.on('hostRoomFull', hostPrepareGame);
-    // gameSocket.on('hostCountdownFinished', hostStartGame);
-    // gameSocket.on('hostNextRound', hostNextRound);
 
-    // // Player Events
+    // Player Events
     gameSocket.on('playerJoinGame', playerJoinGame);
-    gameSocket.on('playerMove', playerMove);
+    gameSocket.on('newMove', newMove);
     gameSocket.on('gameOver', gameOver);
-    // gameSocket.on('playerRestart', playerRestart);
 }
 
 function hostCreateNewGame() {
@@ -44,7 +40,7 @@ function playerJoinGame(data) {
         // Join the room
         sock.join(data.gameId);
 
-        //console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
+        console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
 
         // Emit an event notifying the clients that the player has joined the room.
         io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
@@ -56,7 +52,7 @@ function playerJoinGame(data) {
     }
 }
 
-function playerMove(data) {
+function newMove(data) {
 	console.log("Received Move with data: ");
 	console.log(data);
 	io.sockets.in(data.gameId).emit('newMove', data);

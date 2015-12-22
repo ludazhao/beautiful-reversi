@@ -1,3 +1,7 @@
+/*************************/
+/* In-Game Screen Styles */
+/*************************/
+
 body {
      margin: 0;
      padding: 0;
@@ -68,10 +72,13 @@ span.count{
 
 
 
-/*Style Inspired By Anarammatix
-*/
 
 
+/***********************/
+/* Intro Screen Styles */
+/***********************/
+
+/*Style Inspired By Anagrammatix */
 .btn {
     display: inline-block;
     height: 100%;
@@ -155,6 +162,14 @@ span.count{
 
 }
 
+#author {
+	position: fixed;
+	bottom: 2%;
+	left: 0;
+    right: 0;
+	text-align: center;
+	width: 100%;
+}
 
 .createGameWrapper, .joinGameWrapper, .gameOver {
     margin: 0 auto;
@@ -177,7 +192,9 @@ span.count{
 }
 
 
-
+/***************************/
+/* Join Game Screen Styles */
+/***************************/
 
 .info label{
 	color: #888888;

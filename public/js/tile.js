@@ -7,7 +7,6 @@ function Tile(sprite, row, col, color) {
 	this.animateInitial();
 }
 
-
 Tile.prototype.animateInitial = function() {
 
 	this.sprite.buttonMode = true;
@@ -31,6 +30,7 @@ Tile.prototype.animateInitial = function() {
 	var row = this.row;
 	var col = this.col;
 
+	//initial spring animation
     new TWEEN.Tween(this.sprite)
          .to({x: 7+ row * 80, y: 7 + col * 80, rotation:0}, 2400 + Math.random()*1200)
          .easing(TWEEN.Easing.Elastic.Out)

@@ -2,18 +2,18 @@ function Grid(size, gameManager, gameContainer, playerNum) {
 	this.size = size;
 	this.gm = gameManager;
 	this.isMulti = playerNum != 0;
-	this.playerNum = playerNum;
+	this.playerNum = playerNum; //0 for single player, 1 for multi-player white, 2 for multi-player black
 	this.gameContainer = gameContainer;
-	this.isYourTurn = true;
+
+	//White Starts
 	if (this.playerNum == 0 || this.playerNum == 1) {
-		this.currPlayer = "white";
+		this.isYourTurn = true;
 	} else {
 		this.isYourTurn = false;
-		this.currPlayer = "black";
 	}
+	this.currPlayer = "white";
 	this.numPlayed = 0;
 	this.grid = [];
-	console.log(this.isYourTurn);
 
 }
 
@@ -45,13 +45,16 @@ Grid.prototype.initBoard = function() {
 		  	row.push(tile);
 		}
 	}
-	console.log(this.currPlayer);
 	this.setTurnColor(this.currPlayer);
 }
 
 //function executing a possible move. 
 Grid.prototype.makeMove = function(x, y, isOwnMove){
 	if (!this.isYourTurn && isOwnMove) return; //can't make a move when waiting for the other player
+	var moveColor = this.currPlayer;
+	console.log("movecolor: "+ moveColor);
+
+	//remove game message
 	if (this.numPlayed == 4) {
 		$("#gameMessage").text("");
 	}
@@ -64,60 +67,66 @@ Grid.prototype.makeMove = function(x, y, isOwnMove){
 	}
 
 	//find a Array of tiles that needs to be flipped
-	var allAlteredTiles = this.findAlteredTiles(tile, this.currPlayer);
+	var allAlteredTiles = this.findAlteredTiles(tile, moveColor);
 	if (allAlteredTiles.length <= 1) {
 		tile.noFlipAnimate();
-	} else {
-		var moveData = {}
-		moveData['move'] = [x, y];
+		return;
+	}
 
-		this.numPlayed += 1;
-		//flip all pieces
-		for (var i = 0; i < allAlteredTiles.length; i++) {
-			allAlteredTiles[i].flip(this.currPlayer);
-		}
+	var moveData = {}
+	moveData['move'] = [x, y];
 
-		//if opponents cannot make a move, the current player keeps his turn
-		if (this.opponentsMovesPossible(this.currPlayer)){
-			this.currPlayer = this.currPlayer === "white" ? "black" : "white";
-			this.setTurnColor(this.currPlayer);
-			moveData['keepOwnTurn'] = true;
-		}
-		this.updateCountsGraphics();
-		//check for game-end conditions
-		if (this.numPlayed === this.size * this.size
-			|| (!this.opponentsMovesPossible("white") && !this.opponentsMovesPossible("black"))) {
+	this.numPlayed += 1;
+	//flip all pieces
+	for (var i = 0; i < allAlteredTiles.length; i++) {
+		allAlteredTiles[i].flip(moveColor);
+	}
 
-				document.getElementById("blackIndicator").classList.remove('active');
-				document.getElementById("whiteIndicator").classList.remove('active');
-			if (this.numColor("white") > this.numColor("black")) {
-				document.getElementById("whiteIndicator").classList.add('activeWon');
-				this.gameMssg.innerHTML = "White Wins!";
-			}
-			if (this.numColor("black") > this.numColor("white")){
-				document.getElementById("blackIndicator").classList.add('activeWon');
-				this.gameMssg.innerHTML = "Black Wins!";
-			}
-			if (this.numColor("black") === this.numColor("white")) {
-				document.getElementById("whiteIndicator").classList.add('activeWon');
-				document.getElementById("blackIndicator").classList.add('activeWon');
-				this.gameMssg.innerHTML = "Tie!!";
+	this.updateCountsGraphics();
+	//check for game-end conditions
+	moveData['gameOver'] = this.handleGameOver();
 
-			}
-			moveData['gameOver'] = true;
-		}
-		console.log(this.isMulti);
-		console.log(isOwnMove);
+	//if opponents cannot make a move, the current player keeps his turn
+	if (this.opponentsMovesPossible(moveColor)){
+		this.currPlayer = this.flipColor(this.currPlayer);
+		this.setTurnColor(this.currPlayer);
+
+		//handle multiplayer player-switching
 		if (this.isMulti) {
 			if (isOwnMove) {
-				console.log("grid: sending data");
 				this.gm.sendMove(moveData);
 				this.isYourTurn = false;
+				$("#gameMessage").text("Waiting for Opponent's Turn...");
 			} else {
 				this.isYourTurn = true;
+				$("#gameMessage").text(" ");
 			}
 		}
 	}
+}
+
+Grid.prototype.checkGameOver = function(){
+	if (this.numPlayed === this.size * this.size
+		|| (!this.opponentsMovesPossible("white") && !this.opponentsMovesPossible("black"))) {
+
+			document.getElementById("blackIndicator").classList.remove('active');
+			document.getElementById("whiteIndicator").classList.remove('active');
+		if (this.numColor("white") > this.numColor("black")) {
+			document.getElementById("whiteIndicator").classList.add('activeWon');
+			this.gameMssg.innerHTML = "White Wins!";
+		}
+		if (this.numColor("black") > this.numColor("white")){
+			document.getElementById("blackIndicator").classList.add('activeWon');
+			this.gameMssg.innerHTML = "Black Wins!";
+		}
+		if (this.numColor("black") === this.numColor("white")) {
+			document.getElementById("whiteIndicator").classList.add('activeWon');
+			document.getElementById("blackIndicator").classList.add('activeWon');
+			this.gameMssg.innerHTML = "Tie!!";
+		}
+		return true;
+	}
+	return false;
 }
 
 //returns true if there is a possible move for the next player, false otherwise
@@ -204,7 +213,12 @@ Grid.prototype.setTurnColor = function(color) {
 	}
 }
 
-Grid.prototype.animate = function() {
-	//console.log("Animating Grid");
-	//console.log(this);
+Grid.prototype.flipColor = function(color) {
+	if (color == 'black') {
+		return 'white';
+	}
+	if (color == 'white') {
+		return 'black';
+	}
+	return null;
 }
