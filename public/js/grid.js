@@ -105,7 +105,7 @@ Grid.prototype.makeMove = function(x, y, isOwnMove){
 	}
 }
 
-Grid.prototype.checkGameOver = function(){
+Grid.prototype.handleGameOver = function(){
 	if (this.numPlayed === this.size * this.size
 		|| (!this.opponentsMovesPossible("white") && !this.opponentsMovesPossible("black"))) {
 
